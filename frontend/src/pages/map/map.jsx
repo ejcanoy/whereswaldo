@@ -1,5 +1,6 @@
-import Cursor from "../../components/cursor"
-import Hotspot from "../../components/hotspot"
+// import Cursor from "../../components/cursor"
+// import Hotspot from "../../components/hotspot"
+import MapMarkers from "../../components/mapmarkers"
 
 function Map() {
     return (
@@ -10,7 +11,11 @@ function Map() {
             <div className="">
                 <img className="-z-10" src="/whereswaldoimage1.webp" alt="" />
             </div> */}
-            <Hotspot />
+            {/* <Hotspot /> */}
+            <div className="h-[100px]">
+
+            </div>
+            <MapMarkers />
 
         </>
     )

@@ -10,10 +10,6 @@ html, body {
     position: relative;
   }
   
-  .hotspot:hover {
-    cursor: url('/—Pngtree—square frame_5054164.png') 60 41, auto;
-  }
-  
   .hotspot-img {
     display: block;
     width: 100%;

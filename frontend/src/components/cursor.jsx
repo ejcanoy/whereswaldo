@@ -17,7 +17,7 @@ function Cursor() {
     },[])
 
 
-    return coordinates
+    return [coordinates[0], coordinates[1]].toString()
 }
 
 export default Cursor

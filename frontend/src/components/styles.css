@@ -3,24 +3,3 @@ html, body {
     margin: 0;
   }
   
-  .hotspot {
-    resize: horizontal;
-    overflow: hidden;
-    width: 100%;
-    position: relative;
-  }
-  
-  .hotspot-img {
-    display: block;
-    width: 100%;
-    position: relative;
-  }
-  
-  .hotspot-icon {
-    width: 120px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-  }
-  

@@ -23,7 +23,7 @@ function MapMarkers() {
 
   console.log(hotspotPositions);
   return (
-    <div className="hotspot">
+    <div className="resize-x overflow-hidden w-full relative">
       <img
         src="/whereswaldoimage1.webp"
         alt="Hotspot Image"

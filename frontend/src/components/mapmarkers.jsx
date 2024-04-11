@@ -3,6 +3,13 @@ import "./styles.css";
 
 function MapMarkers() {
   const [hotspotPositions, setHotspotPositions] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupPosition, setPopupPostion] = useState(null);
+  const charLocations = {
+    "raftman" : {x : [3.5, 5.5], y: [41, 44]},
+    "dragon" : {x: [64.98, 67.98], y: [41.21, 44.21]},
+    "wizard" : {x: [74.35, 77.35], y: [64.62, 67.62]}
+  }
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -14,19 +21,37 @@ function MapMarkers() {
 
     const hotspotX = (relativeX / width) * 100;
     const hotspotY = (relativeY / height) * 100;
-    console.log(hotspotX, hotspotY);
 
-    const newHotspot = { x: hotspotX, y: hotspotY };
+    console.log(hotspotX, hotspotY)
 
-    if (verifyPosition(newHotspot)) {
-      setHotspotPositions([...hotspotPositions, newHotspot]);
-    }
+
+    setPopupPostion({ x: hotspotX, y: hotspotY });
+    setShowPopup(true);
   }
 
+  /*
+    new handleclick function
+      // display the pop up
 
-    function verifyPosition(newHotspot) {
-      return newHotspot.x > 4 && newHotspot.x < 6 && newHotspot.y > 41 && newHotspot.y < 44
+    handleModalClick
+      // get which character they selected -> object key so we can verify
+      // verify the position for that character using the function
+        set the location if it true
+  */
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const selectedValue = e.target.querySelector('button[type="submit"]:focus').value;
+    if (verifyPosition(popupPosition, charLocations[selectedValue])) {
+      setHotspotPositions([...hotspotPositions, popupPosition]);
     }
+    setShowPopup(false);
+    setPopupPostion(null);
+  }
+  
+  function verifyPosition(newHotspot, ranges) {
+    return newHotspot.x > ranges.x[0] && newHotspot.x < ranges.x[1] && newHotspot.y > ranges.y[0] && newHotspot.y < ranges.y[1]
+  }
 
   return (
     <>
@@ -40,18 +65,32 @@ function MapMarkers() {
           className="-z-10 w-full"
           onClick={handleImageClick}
         />
+        {showPopup && (
+          <div className="absolute flex" style={{ top: `${popupPosition.y}%`, left: `${popupPosition.x}%` }}>
+            <div className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] relative -translate-x-1/2 -translate-y-1/2" >
+            </div>
+            <form className="grid bg-white w-[50px] h-[75px] relative -translate-x-1/4 sm:-translate-x-1/2 -translate-y-1/2" onSubmit={handleSubmit}>
+              <button type="submit" className="bg-black text-white" value="raftman">raftman</button>
+              <button type="submit" className="bg-black text-white" value="dragon">dragon</button>
+              <button type="submit" className="bg-black text-white" value="wizard">wizard</button>
+            </form>
+          </div>
+        )}
+
+
         {hotspotPositions.map((position, index) => (
-          <div
-            key={index}
-            className="z-10 border-black border-2 w-[50px] h-[50px] absolute"
-            style={{
-              top: `${position.y}%`,
-              left: `${position.x}%`,
-              transform: "translate(-50%, -50%)"
-            }}
-          />
+          <>
+            <div
+              key={index}
+              className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] absolute -translate-x-1/2 -translate-y-1/2"
+              style={{
+                top: `${position.y}%`,
+                left: `${position.x}%`,
+              }}
+            />
+          </>
         ))}
-      </div>
+      </div >
     </>
   );
 }

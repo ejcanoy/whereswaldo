@@ -5,11 +5,11 @@ function MapMarkers() {
   const [hotspotPositions, setHotspotPositions] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPostion] = useState(null);
-  const charLocations = {
-    "raftman" : {x : [3.5, 5.5], y: [41, 44]},
-    "dragon" : {x: [64.98, 67.98], y: [41.21, 44.21]},
-    "wizard" : {x: [74.35, 77.35], y: [64.62, 67.62]}
-  }
+  const [charLocations, setCharLocations] = useState({
+    "raftman": { x: [3.5, 5.5], y: [41, 44] },
+    "dragon": { x: [64.98, 67.98], y: [41.21, 44.21] },
+    "wizard": { x: [74.35, 77.35], y: [64.62, 67.62] }
+  })
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -29,26 +29,20 @@ function MapMarkers() {
     setShowPopup(true);
   }
 
-  /*
-    new handleclick function
-      // display the pop up
-
-    handleModalClick
-      // get which character they selected -> object key so we can verify
-      // verify the position for that character using the function
-        set the location if it true
-  */
-
   function handleSubmit(e) {
     e.preventDefault();
     const selectedValue = e.target.querySelector('button[type="submit"]:focus').value;
     if (verifyPosition(popupPosition, charLocations[selectedValue])) {
       setHotspotPositions([...hotspotPositions, popupPosition]);
+
+      const updatedCharLocations = { ...charLocations };
+      delete updatedCharLocations[selectedValue];
+      setCharLocations(updatedCharLocations);
     }
     setShowPopup(false);
     setPopupPostion(null);
   }
-  
+
   function verifyPosition(newHotspot, ranges) {
     return newHotspot.x > ranges.x[0] && newHotspot.x < ranges.x[1] && newHotspot.y > ranges.y[0] && newHotspot.y < ranges.y[1]
   }
@@ -59,10 +53,17 @@ function MapMarkers() {
         <div>
           <h1>wheres waldo</h1>
         </div>
-        <div>
-          <div><img src="" alt="" /></div>
-          <div><img src="" alt="" /></div>
-          <div><img src="" alt="" /></div>
+        <div className="flex items-center w-[300px] h-full">
+          <div>
+            <h2>find these characters!</h2>
+          </div>
+          <div className="flex justify-around w-[200px]">
+            {Object.keys(charLocations).map((charname) => (
+              <div key={charname}>
+                <img className="w-[50px] h-[50px]" src={`/${charname}.png`} alt={`${charname}`} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <div className="resize-x overflow-hidden w-full relative">
@@ -76,10 +77,16 @@ function MapMarkers() {
           <div className="absolute flex" style={{ top: `${popupPosition.y}%`, left: `${popupPosition.x}%` }}>
             <div className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] relative -translate-x-1/2 -translate-y-1/2" >
             </div>
-            <form className="grid bg-white w-[50px] h-[75px] relative -translate-x-1/4 sm:-translate-x-1/2 -translate-y-1/2" onSubmit={handleSubmit}>
-              <button type="submit" className="bg-black text-white" value="raftman">raftman</button>
-              <button type="submit" className="bg-black text-white" value="dragon">dragon</button>
-              <button type="submit" className="bg-black text-white" value="wizard">wizard</button>
+            <form className="grid justify-around bg-white w-[75px] h-[150px] relative -translate-x-1/4 sm:-translate-x-1/8 -translate-y-1/2" onSubmit={handleSubmit}>
+              {Object.keys(charLocations).map((charname) => (
+                <div key={charname}>
+
+                  <button className="grid justify-items-center" type="submit" value={`${charname}`}>
+                    <img className="w-[25px] h-[25px]" src={`/${charname}.png`} alt={`${charname}`} />
+                    <span>{charname}</span>
+                  </button>
+                </div>
+              ))}
             </form>
           </div>
         )}

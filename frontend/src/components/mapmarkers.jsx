@@ -55,8 +55,15 @@ function MapMarkers() {
 
   return (
     <>
-      <div className="h-[100px] sticky bg-white z-40 top-0">
-        <h1>wheres waldo</h1>
+      <div className="h-[100px] flex justify-between sticky bg-white z-40 top-0">
+        <div>
+          <h1>wheres waldo</h1>
+        </div>
+        <div>
+          <div><img src="" alt="" /></div>
+          <div><img src="" alt="" /></div>
+          <div><img src="" alt="" /></div>
+        </div>
       </div>
       <div className="resize-x overflow-hidden w-full relative">
         <img

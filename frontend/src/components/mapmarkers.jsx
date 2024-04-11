@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles.css";
 
 function MapMarkers() {
@@ -10,6 +10,22 @@ function MapMarkers() {
     "dragon": { x: [64.98, 67.98], y: [41.21, 44.21] },
     "wizard": { x: [74.35, 77.35], y: [64.62, 67.62] }
   })
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (showNotification) {
+      timeoutId = setTimeout(() => {
+        setShowNotification(false);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [showNotification]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -21,9 +37,6 @@ function MapMarkers() {
 
     const hotspotX = (relativeX / width) * 100;
     const hotspotY = (relativeY / height) * 100;
-
-    console.log(hotspotX, hotspotY)
-
 
     setPopupPostion({ x: hotspotX, y: hotspotY });
     setShowPopup(true);
@@ -38,7 +51,11 @@ function MapMarkers() {
       const updatedCharLocations = { ...charLocations };
       delete updatedCharLocations[selectedValue];
       setCharLocations(updatedCharLocations);
+      setNotificationMessage("Correct!");
+    } else {
+      setNotificationMessage("Not Correct!");
     }
+    setShowNotification(true);
     setShowPopup(false);
     setPopupPostion(null);
   }
@@ -49,10 +66,18 @@ function MapMarkers() {
 
   return (
     <>
-      <div className="h-[100px] flex justify-between sticky bg-white z-40 top-0">
+
+      <div className="h-[100px] flex justify-between sticky bg-white z-30 top-0">
         <div>
           <h1>wheres waldo</h1>
         </div>
+        {showNotification &&
+          <>
+            <div className="bg-black text-white w-[100px] h-[50px]">
+              <h3>{notificationMessage}</h3>
+            </div>
+          </>
+        }
         <div className="flex items-center w-[300px] h-full">
           <div>
             <h2>find these characters!</h2>

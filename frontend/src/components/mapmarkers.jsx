@@ -6,7 +6,7 @@ function MapMarkers() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPostion] = useState(null);
   const [charLocations, setCharLocations] = useState({
-    "raftman": { x: [3.5, 5.5], y: [41, 44] },
+    "raftman": { x: [3.75, 6.75], y: [41, 44] },
     "dragon": { x: [64.98, 67.98], y: [41.21, 44.21] },
     "wizard": { x: [74.35, 77.35], y: [64.62, 67.62] }
   })
@@ -38,6 +38,7 @@ function MapMarkers() {
 
     const hotspotX = (relativeX / width) * 100;
     const hotspotY = (relativeY / height) * 100;
+    console.log(hotspotX, hotspotY)
 
     setPopupPostion({ x: hotspotX, y: hotspotY });
     setShowPopup(true);

@@ -27,7 +27,11 @@ function Home() {
             <div className="flex flex-auto">
                 {
                     maps.map((map) => (
-                        <Link key={map._id} to={`/map/${map._id}`} className="border border-black">
+                        <Link
+                            key={map._id}
+                            to={{ pathname: `/map/${map._id}`, state: map }}
+                            className="border border-black"
+                        >
                             <h1>{map.name}</h1>
                         </Link>
                     ))

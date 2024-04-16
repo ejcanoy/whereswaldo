@@ -1,20 +1,36 @@
 import { useEffect, useState } from "react";
 import "./styles.css";
+import { useParams, Link } from "react-router-dom";
 
 function MapMarkers() {
+  const { mapid } = useParams();
+
   const [hotspotPositions, setHotspotPositions] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPostion] = useState(null);
-  const [charLocations, setCharLocations] = useState({
-    "raftman": { x: [3.75, 6.75], y: [41, 44] },
-    "dragon": { x: [64.98, 67.98], y: [41.21, 44.21] },
-    "wizard": { x: [74.35, 77.35], y: [64.62, 67.62] }
-  })
+  const [charLocations, setCharLocations] = useState({})
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
+    async function getMapDetails() {
+      try {
+        const response = await fetch(`http://localhost:3000/map/${mapid}`, {
+          mode: "cors",
+          method: "GET"
+        })
+
+        const data = await response.json();
+        setCharLocations(data.characterLocations);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    if (Object.keys(charLocations).length === 0 ) {
+      getMapDetails();
+    }
+    
     let timeoutId;
 
     if (showNotification) {
@@ -26,7 +42,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification]);
+  }, [showNotification, charLocations, mapid]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -73,9 +89,10 @@ function MapMarkers() {
   return (
     <>
       {gameOver &&
-      <>
-      <div>Game Over!</div>
-      </>
+        <>
+          <div>Game Over!</div>
+          <Link to={"/"}>HOME</Link>
+        </>
       }
       {!gameOver &&
         <>

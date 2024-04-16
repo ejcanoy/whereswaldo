@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom";
 
 function Home() {
     const [maps, setMaps] = useState([]);
@@ -6,10 +7,10 @@ function Home() {
     useEffect(() => {
         async function getMaps() {
             try {
-                const response = await fetch("https://localhost:3000/map", {
+                const response = await fetch("http://localhost:3000/map", {
                     mode: "cors",
                     method: "GET"
-                })
+                });
                 const data = await response.json();
                 setMaps(data);
 
@@ -19,17 +20,20 @@ function Home() {
         }
 
         getMaps();
-    },[])
+    }, [])
     return (
         <>
             <h1>home</h1>
-            {
-                maps.map((map) => (
-                    <>
-                    <h1 key={map.id}>{map.name}</h1>
-                    </>
-                ))
-            }
+            <div className="flex flex-auto">
+                {
+                    maps.map((map) => (
+                        <Link key={map._id} to={`/map/${map._id}`} className="border border-black">
+                            <h1>{map.name}</h1>
+                        </Link>
+                    ))
+
+                }
+            </div>
         </>
     )
 }

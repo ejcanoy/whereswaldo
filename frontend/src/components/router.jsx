@@ -12,7 +12,7 @@ function Router() {
             element: <Home />
         },
         {
-            path: "/map:mapid",
+            path: "/map/:mapid",
             element: <MapMarkers />
         }
     ])

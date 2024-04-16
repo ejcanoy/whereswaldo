@@ -1,11 +1,12 @@
-import Map from "./pages/map/map"
+import Router from "./components/router"
+
 
 
 function App() {
 
   return (
     <>
-      <Map />
+      <Router />
     </>
   )
 }

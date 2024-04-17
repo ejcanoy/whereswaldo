@@ -32,6 +32,7 @@ exports.game_post = asyncHandler(async (req,res) => {
     const game = new Game({
         mapid: req.body.mapid,
         name: null,
+        moves: {},
         startTime: new Date(),
         endTime: null
     })
@@ -60,17 +61,17 @@ exports.game_move_post = asyncHandler(async (req, res) => {
 
     const charLocRangeX = data.mapid.characterLocations[characterName].x;
     const charLocRangeY = data.mapid.characterLocations[characterName].y;
+    const curMoves = data.moves; 
+
 
     if(checkMove(x,y,charLocRangeX,charLocRangeY)) {
-        // save the move
-            // need to save name, x, y
-            // need to add it to the model
-                // just add moves as a field
-                // add it to the post to create a new game too 
-        // res.send true
+        const updatedMoves = { ...curMoves }; 
+        updatedMoves[characterName] = [x, y];
+        const response = await Game.findByIdAndUpdate(req.params.gameid, { moves: updatedMoves }, { new: true });
+        res.send(response);
+    } else {
+        res.send(null);
     }
-    // res send false
-    res.send();
 })
 
 exports.game_put = asyncHandler(async (req, res) => {

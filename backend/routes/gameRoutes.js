@@ -4,10 +4,11 @@ const game_controller = require('../controllers/gameController');
 
 
 router.get('/' , game_controller.game_get_all);
-router.get('/:mapid', game_controller.game_get);
+router.get('/:gameid', game_controller.game_get);
 router.post('/', game_controller.game_post);
-router.put('/:mapid', game_controller.game_put);
-router.delete('/:mapid', game_controller.game_delete);
+router.post('/:gameid/move', game_controller.game_move_post);
+router.put('/:gameid', game_controller.game_put);
+router.delete('/:gameid', game_controller.game_delete);
 
 
 

@@ -27,10 +27,22 @@ function MapMarkers() {
         console.error('Error fetching data:', error);
       }
     }
-    if (Object.keys(charLocations).length === 0 ) {
-      getMapDetails();
+
+    async function getGameDetails() {
+      const gameId = localStorage.getItem("gameId");
+      if (gameId){
+        console.log("yes!");
+      } else {
+        localStorage.setItem("gameId", "item");
+      }
     }
-    
+
+    if (Object.keys(charLocations).length === 0) {
+      getMapDetails();
+      getGameDetails();
+    }
+
+
     let timeoutId;
 
     if (showNotification) {

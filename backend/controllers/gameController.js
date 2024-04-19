@@ -49,11 +49,6 @@ function checkMove(x, y, charLocRangeX, charLocRangeY) {
 }
 
 exports.game_move_post = asyncHandler(async (req, res) => {
-    // get game 
-    // get map with the mapid and get the charlocations
-    // get the move
-    // verify if the move is in the location of the character
-
     const {characterName, x, y} = req.body;
 
     const game = await Game.findById(req.params.gameid)
@@ -69,7 +64,11 @@ exports.game_move_post = asyncHandler(async (req, res) => {
     if(checkMove(x,y,charLocRangeX,charLocRangeY)) {
         const updatedMoves = { ...curMoves }; 
         updatedMoves[characterName] = [x, y];
-        const response = await Game.findByIdAndUpdate(req.params.gameid, { moves: updatedMoves }, { new: true });
+        const updatedData = { moves: updatedMoves};
+        if (Object.keys(updatedMoves).length === 3) {
+            updatedData["endTime"] = new Date();
+        }
+        const response = await Game.findByIdAndUpdate(req.params.gameid, updatedData, { new: true });
         res.send(response);
     } else {
         res.send(null);

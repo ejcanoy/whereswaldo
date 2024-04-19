@@ -53,10 +53,6 @@ function MapMarkers() {
       }
     }
 
-    if (Object.keys(charLocations).length === 0) {
-      // setCharLocations(getMapDetails().characterLocations);
-    }
-
     getGameDetails();
 
 
@@ -90,31 +86,46 @@ function MapMarkers() {
     setShowPopup(true);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const selectedValue = e.target.querySelector('button[type="submit"]:focus').value;
-    if (verifyPosition(popupPosition, charLocations[selectedValue])) {
-      setHotspotPositions([...hotspotPositions, popupPosition]);
+    const characterName = e.target.querySelector('button[type="submit"]:focus').value;
+    console.log(characterName, popupPosition);
+    
+    // post to the api
+    try {
+      const gameId = localStorage.getItem("gameId");
 
-      const updatedCharLocations = { ...charLocations };
-      delete updatedCharLocations[selectedValue];
-
-      if (Object.keys(updatedCharLocations).length === 0) {
-        setGameOver(true);
+      const bodyData = {
+        "characterName" : characterName,
+        "x" : popupPosition.x,
+        "y" : popupPosition.y
       }
-      setCharLocations(updatedCharLocations);
-      setNotificationMessage("Correct!");
-    } else {
-      setNotificationMessage("Not Correct!");
+      const response = await fetch(`http://localhost:3000/game/${gameId}/move`, {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body : JSON.stringify(bodyData)
+      })
+
+      const data = await response.json();
+      if (data) {
+        // move was valid
+        setNotificationMessage("Correct!");
+      } else {
+        // move wasn't valid
+        setNotificationMessage("Not Correct!");
+      }
+    } catch (error) {
+      console.error("Couldn't save move", error);
     }
+
     setShowNotification(true);
     setShowPopup(false);
     setPopupPostion(null);
   }
 
-  function verifyPosition(newHotspot, ranges) {
-    return newHotspot.x > ranges.x[0] && newHotspot.x < ranges.x[1] && newHotspot.y > ranges.y[0] && newHotspot.y < ranges.y[1]
-  }
 
   console.log(hotspotPositions);
   return (

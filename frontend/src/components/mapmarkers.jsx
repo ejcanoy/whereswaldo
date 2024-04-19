@@ -14,33 +14,51 @@ function MapMarkers() {
   const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
-    async function getMapDetails() {
-      try {
-        const response = await fetch(`http://localhost:3000/map/${mapid}`, {
-          mode: "cors",
-          method: "GET"
-        })
-
-        const data = await response.json();
-        setCharLocations(data.characterLocations);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
-
     async function getGameDetails() {
       const gameId = localStorage.getItem("gameId");
-      if (gameId){
-        console.log("yes!");
+      if (gameId) {
+        // continue game logic
+        try {
+          const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+            mode: "cors",
+            method: "GET"
+          })
+
+          const data = await response.json();
+          if (data) {
+
+            // figure out what to do when to start a new game when one was already created!!!!
+
+
+            const characterLocations = data.mapid.characterLocations;
+            const curMoves = data.moves;
+            const charactersLeftover = Object.keys(characterLocations).filter(character => !curMoves[character]);
+            setCharLocations(charactersLeftover);
+            setHotspotPositions(Object.values(curMoves));
+            // try to set the moves too because we need to know where to put the boxes  
+          } else {
+            console.log("figure this part out later");
+          }
+          // if game exists
+            // ask if you want to continue or restart
+          // if game does not exist
+            // ask to start a new game?
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+
       } else {
-        localStorage.setItem("gameId", "item");
+        // post game and set game id
+        // localStorage.setItem("gameId", "item");
       }
     }
 
     if (Object.keys(charLocations).length === 0) {
-      getMapDetails();
-      getGameDetails();
+      // setCharLocations(getMapDetails().characterLocations);
     }
+
+    getGameDetails();
+
 
 
     let timeoutId;
@@ -54,7 +72,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification, charLocations, mapid]);
+  }, [showNotification, mapid]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -98,6 +116,7 @@ function MapMarkers() {
     return newHotspot.x > ranges.x[0] && newHotspot.x < ranges.x[1] && newHotspot.y > ranges.y[0] && newHotspot.y < ranges.y[1]
   }
 
+  console.log(hotspotPositions);
   return (
     <>
       {gameOver &&
@@ -124,9 +143,9 @@ function MapMarkers() {
                 <h2>find these characters!</h2>
               </div>
               <div className="flex justify-around w-[200px]">
-                {Object.keys(charLocations).map((charname) => (
-                  <div key={charname}>
-                    <img className="w-[50px] h-[50px]" src={`/${charname}.png`} alt={`${charname}`} />
+                {Object.keys(charLocations).map((charIndex) => (
+                  <div key={charLocations[charIndex]}>
+                    <img className="w-[50px] h-[50px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
                   </div>
                 ))}
               </div>
@@ -144,12 +163,12 @@ function MapMarkers() {
                 <div className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] relative -translate-x-1/2 -translate-y-1/2" >
                 </div>
                 <form className="grid justify-around bg-white w-[75px] h-[150px] relative -translate-x-1/4 sm:-translate-x-1/8 -translate-y-1/2" onSubmit={handleSubmit}>
-                  {Object.keys(charLocations).map((charname) => (
-                    <div key={charname}>
+                  {Object.keys(charLocations).map((charIndex) => (
+                    <div key={charLocations[charIndex]}>
 
-                      <button className="grid justify-items-center" type="submit" value={`${charname}`}>
-                        <img className="w-[25px] h-[25px]" src={`/${charname}.png`} alt={`${charname}`} />
-                        <span>{charname}</span>
+                      <button className="grid justify-items-center" type="submit" value={`${charLocations[charIndex]}`}>
+                        <img className="w-[25px] h-[25px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
+                        <span>{charLocations[charIndex]}</span>
                       </button>
                     </div>
                   ))}
@@ -158,15 +177,15 @@ function MapMarkers() {
             )}
 
 
-            {hotspotPositions.map((position, index) => (
+            {hotspotPositions.map((index) => (
               <>
                 <div
                   key={index}
                   className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] absolute -translate-x-1/2 -translate-y-1/2"
                   style={{
-                    top: `${position.y}%`,
-                    left: `${position.x}%`,
-                  }}
+                    top: `${index[1]}%`,
+                    left: `${index[0]}%`,
+                  }} 
                 />
               </>
             ))}

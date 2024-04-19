@@ -17,7 +17,9 @@ exports.game_get_all = asyncHandler(async (req, res) => {
 
 exports.game_get = asyncHandler(async (req,res) => {
     try {
-        const result = await Game.findById(req.params.gameid);
+        const result = await Game.findById(req.params.gameid)
+                    .populate("mapid")
+                    .exec();
         if (!result) {
             return res.status(404).send("Game not found");
         }

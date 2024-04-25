@@ -31,7 +31,6 @@ exports.game_get = asyncHandler(async (req,res) => {
 })
 
 exports.game_post = asyncHandler(async (req,res) => {
-    console.log(req.body.mapid);
     const curTime = new Date();
     const game = new Game({
         mapid: req.body.mapid,
@@ -74,7 +73,6 @@ exports.game_move_post = asyncHandler(async (req, res) => {
         const response = await Game.findByIdAndUpdate(req.params.gameid, updatedData, { new: true });
         res.send(response);
     } else {
-        console.log("here");
         res.send({});
     }
 })

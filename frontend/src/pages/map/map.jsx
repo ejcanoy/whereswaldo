@@ -1,11 +1,11 @@
 
 import MapMarkers from "../../components/mapmarkers"
-
+ 
 function Map() {
+
     return (
         <>
-            <MapMarkers />
-
+            <MapMarkers/>
         </>
     )
 }

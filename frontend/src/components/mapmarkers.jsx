@@ -12,12 +12,12 @@ function MapMarkers() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [showContinueModal, setShowContinueModal] = useState(false);
 
   useEffect(() => {
     async function getGameDetails() {
       const gameId = localStorage.getItem("gameId");
       if (gameId) {
-        // continue game logic
         try {
           const response = await fetch(`http://localhost:3000/game/${gameId}`, {
             mode: "cors",
@@ -26,23 +26,37 @@ function MapMarkers() {
 
           const data = await response.json();
           if (data) {
+            const timeDifference = new Date() - new Date(data.updatedTime);
+            const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+            if (data.endTime) {
+              console.log("here 1")
+              setGameOver(true);
+            } else if (timeDifferenceInMinutes > 20) {
+              console.log("here 2");
+              setShowContinueModal(true);
+            } else {
+              console.log("here 3");
+              const characterLocations = data.mapid.characterLocations;
+              const curMoves = data.moves;
+              let charactersLeftover = Object.keys(characterLocations);
+              console.log(charactersLeftover);
+              if (curMoves) {
+                charactersLeftover = charactersLeftover.filter(character => !curMoves[character]);
+              }
 
-            // figure out what to do when to start a new game when one was already created!!!!
+              if (charactersLeftover.length === 0) {
+                setGameOver(true)
+                return;
+              }
+              setCharLocations(charactersLeftover);
+              if (curMoves) {
+                setHotspotPositions(Object.values(curMoves));
 
-
-            const characterLocations = data.mapid.characterLocations;
-            const curMoves = data.moves;
-            const charactersLeftover = Object.keys(characterLocations).filter(character => !curMoves[character]);
-            setCharLocations(charactersLeftover);
-            setHotspotPositions(Object.values(curMoves));
-            // try to set the moves too because we need to know where to put the boxes  
+              }
+            }
           } else {
             console.log("figure this part out later");
           }
-          // if game exists
-            // ask if you want to continue or restart
-          // if game does not exist
-            // ask to start a new game?
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -52,8 +66,10 @@ function MapMarkers() {
         // localStorage.setItem("gameId", "item");
       }
     }
-
+    // maybe start game function
     getGameDetails();
+
+    // then getGameDetails
 
 
 
@@ -68,7 +84,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification, mapid]);
+  }, [showNotification, setShowNotification, mapid, setShowContinueModal, showContinueModal, gameOver]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -80,7 +96,6 @@ function MapMarkers() {
 
     const hotspotX = (relativeX / width) * 100;
     const hotspotY = (relativeY / height) * 100;
-    console.log(hotspotX, hotspotY)
 
     setPopupPostion({ x: hotspotX, y: hotspotY });
     setShowPopup(true);
@@ -89,16 +104,15 @@ function MapMarkers() {
   async function handleSubmit(e) {
     e.preventDefault();
     const characterName = e.target.querySelector('button[type="submit"]:focus').value;
-    console.log(characterName, popupPosition);
-    
+
     // post to the api
     try {
       const gameId = localStorage.getItem("gameId");
 
       const bodyData = {
-        "characterName" : characterName,
-        "x" : popupPosition.x,
-        "y" : popupPosition.y
+        "characterName": characterName,
+        "x": popupPosition.x,
+        "y": popupPosition.y
       }
       const response = await fetch(`http://localhost:3000/game/${gameId}/move`, {
         mode: "cors",
@@ -106,15 +120,13 @@ function MapMarkers() {
         headers: {
           "Content-Type": "application/json"
         },
-        body : JSON.stringify(bodyData)
+        body: JSON.stringify(bodyData)
       })
 
       const data = await response.json();
-      if (data) {
-        // move was valid
+      if (Object.keys(data).length !== 0) {
         setNotificationMessage("Correct!");
       } else {
-        // move wasn't valid
         setNotificationMessage("Not Correct!");
       }
     } catch (error) {
@@ -126,14 +138,75 @@ function MapMarkers() {
     setPopupPostion(null);
   }
 
+  async function handleContinue(e) {
+    e.preventDefault();
+    const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
+    // send update time to current time
+    const updateBody = {};
+    const curTime = new Date();
+    updateBody["updatedTime"] = curTime;
+    if (continueOrRestart === "restart") {
+      updateBody["startTime"] = curTime;
+      updateBody["moves"] = {};
+    }
+    try {
+      const gameId = localStorage.getItem("gameId");
+      const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+        mode: "cors",
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateBody)
+      });
+      const data = await response.json();
+    } catch (error) {
+      console.error("Could not update game", error);
+    }
+    setShowContinueModal(false);
+  }
 
-  console.log(hotspotPositions);
+  async function handleNewGameButton(e) {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3000/game", {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ "mapid": mapid })
+      });
+      const data = await response.json();
+      localStorage.setItem("gameId", data._id);;
+      setGameOver(false);
+    } catch (error) {
+      console.error("Could not start new game", error);
+    }
+
+  }
+
   return (
     <>
       {gameOver &&
         <>
           <div>Game Over!</div>
           <Link to={"/"}>HOME</Link>
+          {
+            // form button that just posts a new game!
+          }
+          <form onSubmit={handleNewGameButton}>
+            <button type="submit">New Game</button>
+          </form>
+        </>
+      }
+      {
+        showContinueModal &&
+        <>
+          <form onSubmit={handleContinue}>
+            <button type="submit" value="continue">continue</button>
+            <button type="submit" value="restart">restart</button>
+          </form>
         </>
       }
       {!gameOver &&
@@ -196,7 +269,7 @@ function MapMarkers() {
                   style={{
                     top: `${index[1]}%`,
                     left: `${index[0]}%`,
-                  }} 
+                  }}
                 />
               </>
             ))}

@@ -6,7 +6,8 @@ const GameSchema = new Schema({
     name: {type: Schema.Types.String},
     moves: {type: Object},
     startTime: {type: Schema.Types.Date},
-    endTime: {type: Schema.Types.Date}
+    endTime: {type: Schema.Types.Date},
+    updatedTime: {type: Schema.Types.Date}
 })
 
 module.exports = mongoose.model("Game", GameSchema);

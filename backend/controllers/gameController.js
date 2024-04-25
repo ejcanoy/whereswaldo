@@ -31,12 +31,15 @@ exports.game_get = asyncHandler(async (req,res) => {
 })
 
 exports.game_post = asyncHandler(async (req,res) => {
+    console.log(req.body.mapid);
+    const curTime = new Date();
     const game = new Game({
         mapid: req.body.mapid,
         name: null,
         moves: {},
-        startTime: new Date(),
-        endTime: null
+        startTime: curTime,
+        endTime: null,
+        updatedTime: curTime
     })
 
     const result = await game.save();
@@ -71,12 +74,13 @@ exports.game_move_post = asyncHandler(async (req, res) => {
         const response = await Game.findByIdAndUpdate(req.params.gameid, updatedData, { new: true });
         res.send(response);
     } else {
-        res.send(null);
+        console.log("here");
+        res.send({});
     }
 })
 
 exports.game_put = asyncHandler(async (req, res) => {
-    const game = await Game.findByIdAndUpdate(req.params.gameid, {name: req.body.name, endTime: new Date()}, {new: true});
+    const game = await Game.findByIdAndUpdate(req.params.gameid, req.body, {new: true});
 
     if (!game) {
         const err = new Error("Game not found");

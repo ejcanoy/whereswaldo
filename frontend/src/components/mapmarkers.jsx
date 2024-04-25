@@ -12,6 +12,7 @@ function MapMarkers() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [showNewGame, setShowNewGame] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
 
   useEffect(() => {
@@ -51,15 +52,15 @@ function MapMarkers() {
               }
             }
           } else {
-            console.log("figure this part out later");
+            setShowNewGame(true);
           }
         } catch (error) {
           console.error('Error fetching data:', error);
         }
 
       } else {
-        // post game and set game id
-        // localStorage.setItem("gameId", "item");
+        console.log("here");
+        setShowNewGame(true);
       }
     }
     // maybe start game function
@@ -80,7 +81,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification, setShowNotification, mapid, setShowContinueModal, showContinueModal, gameOver]);
+  }, [showNotification, mapid, showContinueModal, gameOver, showNewGame]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -176,6 +177,7 @@ function MapMarkers() {
       const data = await response.json();
       localStorage.setItem("gameId", data._id);;
       setGameOver(false);
+      setShowNewGame(false);
     } catch (error) {
       console.error("Could not start new game", error);
     }
@@ -197,6 +199,14 @@ function MapMarkers() {
         </>
       }
       {
+        showNewGame &&
+        <>
+          <form onSubmit={handleNewGameButton}>
+            <button type="submit">New Game</button>
+          </form>
+        </>
+      }
+      {
         showContinueModal &&
         <>
           <form onSubmit={handleContinue}>
@@ -205,7 +215,7 @@ function MapMarkers() {
           </form>
         </>
       }
-      {!gameOver &&
+      {(!gameOver && !showNewGame) &&
         <>
           <div className="h-[100px] flex justify-between sticky bg-white z-30 top-0">
             <div>

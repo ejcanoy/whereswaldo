@@ -29,17 +29,13 @@ function MapMarkers() {
             const timeDifference = new Date() - new Date(data.updatedTime);
             const timeDifferenceInMinutes = timeDifference / (1000 * 60);
             if (data.endTime) {
-              console.log("here 1")
               setGameOver(true);
             } else if (timeDifferenceInMinutes > 20) {
-              console.log("here 2");
               setShowContinueModal(true);
             } else {
-              console.log("here 3");
               const characterLocations = data.mapid.characterLocations;
               const curMoves = data.moves;
               let charactersLeftover = Object.keys(characterLocations);
-              console.log(charactersLeftover);
               if (curMoves) {
                 charactersLeftover = charactersLeftover.filter(character => !curMoves[character]);
               }

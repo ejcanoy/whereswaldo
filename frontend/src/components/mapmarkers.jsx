@@ -17,6 +17,8 @@ function MapMarkers() {
   const [showNewGame, setShowNewGame] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [name, setName] = useState(null);
   const [showEndGameForm, setShowEndGameForm] = useState(false);
 
   useEffect(() => {
@@ -32,12 +34,14 @@ function MapMarkers() {
           const data = await response.json();
           if (data) {
             setStartTime(data.startTime);
+            setEndTime(data.endTime);
             const timeDifference = new Date() - new Date(data.updatedTime);
             const timeDifferenceInMinutes = timeDifference / (1000 * 60);
             if (data.endTime) {
               setGameOver(true);
-              // gotta figure out how to not show form after submit!
-              setShowEndGameForm(true);
+              if (!data.name) {
+                setShowEndGameForm(true);
+              }
             } else if (timeDifferenceInMinutes > 20) {
               setShowContinueModal(true);
             } else {
@@ -66,7 +70,6 @@ function MapMarkers() {
         }
 
       } else {
-        console.log("here");
         setShowNewGame(true);
       }
     }
@@ -86,7 +89,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification, mapid, showContinueModal, gameOver, showNewGame, showEndGameForm]);
+  }, [showNotification, mapid, showContinueModal, gameOver, showNewGame, showEndGameForm, name]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -105,17 +108,17 @@ function MapMarkers() {
 
   const formatTime = (milliseconds) => {
     const minutes = Math.floor(milliseconds / (1000 * 60))
-        .toString()
-        .padStart(2, "0");
+      .toString()
+      .padStart(2, "0");
     const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000)
-        .toString()
-        .padStart(2, "0");
+      .toString()
+      .padStart(2, "0");
     const ms = Math.floor(milliseconds % 1000)
-        .toString()
-        .padStart(3, "0");
+      .toString()
+      .padStart(3, "0");
 
     return `${minutes}:${seconds}:${ms}`;
-};
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -205,7 +208,6 @@ function MapMarkers() {
     e.preventDefault();
     const gameId = localStorage.getItem("gameId");
     const name = e.target.elements.name.value;
-    console.log(gameId, name);
     try {
       const response = await fetch(`http://localhost:3000/game/${gameId}`, {
         mode: "cors",
@@ -213,7 +215,7 @@ function MapMarkers() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ "name": name})
+        body: JSON.stringify({ "name": name })
       });
       const data = await response.json();
       setShowEndGameForm(false);
@@ -221,6 +223,7 @@ function MapMarkers() {
       console.error("Could not start new game", error);
     }
   }
+
 
   return (
     <>
@@ -237,7 +240,7 @@ function MapMarkers() {
                     <input type="text" name="name" />
                   </div>
                   <div>
-                    <p>Score: {formatTime(new Date().getTime() - new Date(startTime).getTime())}</p>
+                    <p>Score: {formatTime(new Date(endTime).getTime() - new Date(startTime).getTime())}</p>
                   </div>
                   <button type="submit">Submit Score</button>
                 </form>

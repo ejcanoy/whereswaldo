@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import "./styles.css";
 import { useParams, Link } from "react-router-dom";
 import Timer from "./timer";
@@ -17,6 +17,7 @@ function MapMarkers() {
   const [showNewGame, setShowNewGame] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [startTime, setStartTime] = useState(null);
+  const [showEndGameForm, setShowEndGameForm] = useState(false);
 
   useEffect(() => {
     async function getGameDetails() {
@@ -35,6 +36,8 @@ function MapMarkers() {
             const timeDifferenceInMinutes = timeDifference / (1000 * 60);
             if (data.endTime) {
               setGameOver(true);
+              // gotta figure out how to not show form after submit!
+              setShowEndGameForm(true);
             } else if (timeDifferenceInMinutes > 20) {
               setShowContinueModal(true);
             } else {
@@ -83,7 +86,7 @@ function MapMarkers() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [showNotification, mapid, showContinueModal, gameOver, showNewGame]);
+  }, [showNotification, mapid, showContinueModal, gameOver, showNewGame, showEndGameForm]);
 
   function handleImageClick(e) {
     const image = e.currentTarget;
@@ -99,6 +102,20 @@ function MapMarkers() {
     setPopupPostion({ x: hotspotX, y: hotspotY });
     setShowPopup(true);
   }
+
+  const formatTime = (milliseconds) => {
+    const minutes = Math.floor(milliseconds / (1000 * 60))
+        .toString()
+        .padStart(2, "0");
+    const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000)
+        .toString()
+        .padStart(2, "0");
+    const ms = Math.floor(milliseconds % 1000)
+        .toString()
+        .padStart(3, "0");
+
+    return `${minutes}:${seconds}:${ms}`;
+};
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -184,18 +201,62 @@ function MapMarkers() {
 
   }
 
+  async function handleNameSubmit(e) {
+    e.preventDefault();
+    const gameId = localStorage.getItem("gameId");
+    const name = e.target.elements.name.value;
+    console.log(gameId, name);
+    try {
+      const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+        mode: "cors",
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ "name": name})
+      });
+      const data = await response.json();
+      setShowEndGameForm(false);
+    } catch (error) {
+      console.error("Could not start new game", error);
+    }
+  }
+
   return (
     <>
       {gameOver &&
         <>
           <div>Game Over!</div>
-          <Link to={"/"}>HOME</Link>
-          <form onSubmit={handleNewGameButton}>
-            <button type="submit">New Game</button>
-          </form>
-          <div>
-            <Scoreboard />
-          </div>
+          {
+            showEndGameForm &&
+            <>
+              <div>
+                <form onSubmit={handleNameSubmit}>
+                  <div>
+                    <label htmlFor="name">Name: </label>
+                    <input type="text" name="name" />
+                  </div>
+                  <div>
+                    <p>Score: {formatTime(new Date().getTime() - new Date(startTime).getTime())}</p>
+                  </div>
+                  <button type="submit">Submit Score</button>
+                </form>
+              </div>
+            </>
+          }
+
+          {
+            !showEndGameForm &&
+            <>
+              <Link to={"/"}>HOME</Link>
+              <form onSubmit={handleNewGameButton}>
+                <button type="submit">New Game</button>
+              </form>
+              <div>
+                <Scoreboard />
+              </div>
+            </>
+          }
         </>
       }
       {
@@ -221,7 +282,7 @@ function MapMarkers() {
           <div className="h-[100px] flex justify-between sticky bg-white z-30 top-0">
             <div>
               <h1>wheres waldo</h1>
-              <Timer startTime={startTime}/>
+              <Timer startTime={startTime} />
             </div>
             {showNotification &&
               <>

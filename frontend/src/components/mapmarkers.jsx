@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./styles.css";
 import { useParams, Link } from "react-router-dom";
+import Timer from "./timer";
+import Scoreboard from "./scoreboard";
 
 function MapMarkers() {
   const { mapid } = useParams();
@@ -14,6 +16,7 @@ function MapMarkers() {
   const [gameOver, setGameOver] = useState(false);
   const [showNewGame, setShowNewGame] = useState(false);
   const [showContinueModal, setShowContinueModal] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
     async function getGameDetails() {
@@ -27,6 +30,7 @@ function MapMarkers() {
 
           const data = await response.json();
           if (data) {
+            setStartTime(data.startTime);
             const timeDifference = new Date() - new Date(data.updatedTime);
             const timeDifferenceInMinutes = timeDifference / (1000 * 60);
             if (data.endTime) {
@@ -63,10 +67,8 @@ function MapMarkers() {
         setShowNewGame(true);
       }
     }
-    // maybe start game function
     getGameDetails();
 
-    // then getGameDetails
 
 
 
@@ -102,7 +104,6 @@ function MapMarkers() {
     e.preventDefault();
     const characterName = e.target.querySelector('button[type="submit"]:focus').value;
 
-    // post to the api
     try {
       const gameId = localStorage.getItem("gameId");
 
@@ -138,7 +139,6 @@ function MapMarkers() {
   async function handleContinue(e) {
     e.preventDefault();
     const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
-    // send update time to current time
     const updateBody = {};
     const curTime = new Date();
     updateBody["updatedTime"] = curTime;
@@ -190,12 +190,12 @@ function MapMarkers() {
         <>
           <div>Game Over!</div>
           <Link to={"/"}>HOME</Link>
-          {
-            // form button that just posts a new game!
-          }
           <form onSubmit={handleNewGameButton}>
             <button type="submit">New Game</button>
           </form>
+          <div>
+            <Scoreboard />
+          </div>
         </>
       }
       {
@@ -204,6 +204,7 @@ function MapMarkers() {
           <form onSubmit={handleNewGameButton}>
             <button type="submit">New Game</button>
           </form>
+          <Scoreboard />
         </>
       }
       {
@@ -220,6 +221,7 @@ function MapMarkers() {
           <div className="h-[100px] flex justify-between sticky bg-white z-30 top-0">
             <div>
               <h1>wheres waldo</h1>
+              <Timer startTime={startTime}/>
             </div>
             {showNotification &&
               <>

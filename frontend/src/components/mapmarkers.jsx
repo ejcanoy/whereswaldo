@@ -278,10 +278,21 @@ function MapMarkers() {
       {
         showNewGame &&
         <>
-          <form onSubmit={handleNewGameButton}>
-            <button type="submit">New Game</button>
-          </form>
-          <Scoreboard />
+                <div className="flex flex-col items-center justify-center">
+                  <div className="border-2 border-black flex flex-col items-center w-56 gap-4 my-4 py-4">
+                    <div>
+                      <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
+                    </div>
+                    <div>
+                      <form onSubmit={handleNewGameButton}>
+                        <button className="border-2 border-black px-2" type="submit">New Game</button>
+                      </form>
+                    </div>
+                  </div>
+                  <div>
+                    <Scoreboard />
+                  </div>
+                </div>
         </>
       }
       {

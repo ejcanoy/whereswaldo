@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 
 function Home() {
     const [maps, setMaps] = useState([]);
+    const apiURL = import.meta.env.VITE_URL;
 
     useEffect(() => {
         async function getMaps() {
             try {
-                const response = await fetch("http://localhost:3000/map", {
+                const response = await fetch(`${apiURL}/map`, {
                     mode: "cors",
                     method: "GET"
                 });
@@ -23,16 +24,21 @@ function Home() {
     }, [])
     return (
         <>
-            <h1>home</h1>
-            <div className="flex flex-auto">
+            <div className="flex justify-center mb-5 md:mb-10">
+                <h1 className="text-4xl">Wheres Waldo?</h1>
+            </div>
+            <div className="flex flex-auto justify-around">
                 {
                     maps.map((map) => (
                         <Link
                             key={map._id}
                             to={{ pathname: `/map/${map._id}`, state: map }}
-                            className="border border-black"
+                            className="border border-black w-[250px]"
                         >
-                            <h1>{map.name}</h1>
+                            <div className="w-full">
+                                <img className="object-contain w-full h-full" src="/whereswaldoimage1.webp" alt="" />
+                            </div>                            
+                            <h1 className="text-center">{map.name}</h1>
                         </Link>
                     ))
 

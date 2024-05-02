@@ -20,13 +20,14 @@ function MapMarkers() {
   const [endTime, setEndTime] = useState(null);
   const [name, setName] = useState(null);
   const [showEndGameForm, setShowEndGameForm] = useState(false);
+  const apiURL = import.meta.env.VITE_URL;
 
   useEffect(() => {
     async function getGameDetails() {
       const gameId = localStorage.getItem("gameId");
       if (gameId) {
         try {
-          const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+          const response = await fetch(`${apiURL}/game/${gameId}`, {
             mode: "cors",
             method: "GET"
           })
@@ -44,23 +45,22 @@ function MapMarkers() {
               }
             } else if (timeDifferenceInMinutes > 20) {
               setShowContinueModal(true);
-            } else {
-              const characterLocations = data.mapid.characterLocations;
-              const curMoves = data.moves;
-              let charactersLeftover = Object.keys(characterLocations);
-              if (curMoves) {
-                charactersLeftover = charactersLeftover.filter(character => !curMoves[character]);
-              }
+            }
+            const characterLocations = data.mapid.characterLocations;
+            const curMoves = data.moves;
+            let charactersLeftover = Object.keys(characterLocations);
+            if (curMoves) {
+              charactersLeftover = charactersLeftover.filter(character => !curMoves[character]);
+            }
 
-              if (charactersLeftover.length === 0) {
-                setGameOver(true)
-                return;
-              }
-              setCharLocations(charactersLeftover);
-              if (curMoves) {
-                setHotspotPositions(Object.values(curMoves));
+            if (charactersLeftover.length === 0) {
+              setGameOver(true)
+              return;
+            }
+            setCharLocations(charactersLeftover);
+            if (curMoves) {
+              setHotspotPositions(Object.values(curMoves));
 
-              }
             }
           } else {
             setShowNewGame(true);
@@ -97,7 +97,7 @@ function MapMarkers() {
     const width = image.width;
     const height = image.height;
     const relativeX = e.pageX;
-    const relativeY = e.pageY - 100;
+    const relativeY = e.pageY - 150;
 
     const hotspotX = (relativeX / width) * 100;
     const hotspotY = (relativeY / height) * 100;
@@ -132,7 +132,7 @@ function MapMarkers() {
         "x": popupPosition.x,
         "y": popupPosition.y
       }
-      const response = await fetch(`http://localhost:3000/game/${gameId}/move`, {
+      const response = await fetch(`${apiURL}/game/${gameId}/move`, {
         mode: "cors",
         method: "POST",
         headers: {
@@ -168,7 +168,7 @@ function MapMarkers() {
     }
     try {
       const gameId = localStorage.getItem("gameId");
-      const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+      const response = await fetch(`${apiURL}/game/${gameId}`, {
         mode: "cors",
         method: "PUT",
         headers: {
@@ -184,9 +184,10 @@ function MapMarkers() {
   }
 
   async function handleNewGameButton(e) {
+    console.log("clicked");
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/game", {
+      const response = await fetch(`${apiURL}/game`, {
         mode: "cors",
         method: "POST",
         headers: {
@@ -209,7 +210,7 @@ function MapMarkers() {
     const gameId = localStorage.getItem("gameId");
     const name = e.target.elements.name.value;
     try {
-      const response = await fetch(`http://localhost:3000/game/${gameId}`, {
+      const response = await fetch(`${apiURL}/game/${gameId}`, {
         mode: "cors",
         method: "PUT",
         headers: {
@@ -229,37 +230,49 @@ function MapMarkers() {
     <>
       {gameOver &&
         <>
-          <div>Game Over!</div>
-          {
-            showEndGameForm &&
-            <>
-              <div>
-                <form onSubmit={handleNameSubmit}>
-                  <div>
-                    <label htmlFor="name">Name: </label>
-                    <input type="text" name="name" />
-                  </div>
-                  <div>
-                    <p>Score: {formatTime(new Date(endTime).getTime() - new Date(startTime).getTime())}</p>
-                  </div>
-                  <button type="submit">Submit Score</button>
-                </form>
-              </div>
-            </>
-          }
+          <div className="w-screen h-screen flex flex-col items-center justify-center">
+            <div className="flex justify-center text-4xl">
+              <h1>Game Over!</h1>
+            </div>
+            {
+              showEndGameForm &&
+              <>
+                <div className="flex justify-center">
+                  <form onSubmit={handleNameSubmit} className="flex flex-col items-center justify-center border-2 border-black p-2">
+                    <div className="mb-2">
+                      <label htmlFor="name">Name: </label>
+                      <input className="border-2 border-black" type="text" name="name" />
+                    </div>
+                    <div className="mb-4">
+                      <p>Score: {formatTime(new Date(endTime).getTime() - new Date(startTime).getTime())}</p>
+                    </div>
+                    <div className="flex justify-center"><button className="border-2 border-black px-2" type="submit">Submit Score</button></div>
+                  </form>
+                </div>
+              </>
+            }
 
-          {
-            !showEndGameForm &&
-            <>
-              <Link to={"/"}>HOME</Link>
-              <form onSubmit={handleNewGameButton}>
-                <button type="submit">New Game</button>
-              </form>
-              <div>
-                <Scoreboard />
-              </div>
-            </>
-          }
+            {
+              !showEndGameForm &&
+              <>
+                <div className="flex flex-col items-center justify-center">
+                  <div className="border-2 border-black flex flex-col items-center w-56 gap-4 my-4 py-4">
+                    <div>
+                      <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
+                    </div>
+                    <div>
+                      <form onSubmit={handleNewGameButton}>
+                        <button className="border-2 border-black px-2" type="submit">New Game</button>
+                      </form>
+                    </div>
+                  </div>
+                  <div>
+                    <Scoreboard />
+                  </div>
+                </div>
+              </>
+            }
+          </div>
         </>
       }
       {
@@ -274,36 +287,57 @@ function MapMarkers() {
       {
         showContinueModal &&
         <>
-          <form onSubmit={handleContinue}>
-            <button type="submit" value="continue">continue</button>
-            <button type="submit" value="restart">restart</button>
-          </form>
+          <div className="w-screen h-screen flex flex-col items-center justify-center absolute">
+            <div>
+              <p>Current Score: {formatTime(new Date().getTime() - new Date(startTime).getTime())}</p>
+              <div>
+                <p className="text-center">Current Characters Left</p>
+                <div className="flex justify-between">
+                  {Object.keys(charLocations).map((charIndex) => (
+                    <div key={charLocations[charIndex]}>
+                      <h4>{charLocations[charIndex]}</h4>
+                      <img className="w-[50px] h-[50px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <form onSubmit={handleContinue} className="flex justify-center flex-col items-center gap-5 border-2 border-black p-5 mt-5">
+              <div><button className="border-black border-2 px-2" type="submit" value="continue">continue</button></div>
+              <div><button className="border-black border-2 px-2" type="submit" value="restart">restart</button></div>
+            </form>
+          </div>
         </>
       }
-      {(!gameOver && !showNewGame) &&
+      {(!gameOver && !showNewGame && !showContinueModal) &&
         <>
-          <div className="h-[100px] flex justify-between sticky bg-white z-30 top-0">
-            <div>
-              <h1>wheres waldo</h1>
-              <Timer startTime={startTime} />
+          <div className="h-[150px] sticky bg-white z-30 top-0">
+            <div className="flex justify-center mb-5">
+              <Link to="/">
+                <h1 className="text-4xl">Wheres Waldo?</h1>
+              </Link>
             </div>
-            {showNotification &&
-              <>
-                <div className="bg-black text-white w-[100px] h-[50px]">
-                  <h3>{notificationMessage}</h3>
-                </div>
-              </>
-            }
-            <div className="flex items-center w-[300px] h-full">
-              <div>
-                <h2>find these characters!</h2>
-              </div>
-              <div className="flex justify-around w-[200px]">
-                {Object.keys(charLocations).map((charIndex) => (
-                  <div key={charLocations[charIndex]}>
-                    <img className="w-[50px] h-[50px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
+            <div className="flex justify-between px-1 md:px-5 flex-wrap">
+              <Timer className="order-1" startTime={startTime} />
+
+              {showNotification &&
+                <>
+                  <div className="flex items-center justify-center bg-black text-white text-center w-[100px] h-[25px] md:w-[300px] md:h-[50px] order-3 md:order-2">
+                    <h3>{notificationMessage}</h3>
                   </div>
-                ))}
+                </>
+              }
+              <div className="flex items-center w-[300px] h-full order-2 md:order-3">
+                <div>
+                  <h2 className="text-center">find these characters!</h2>
+                </div>
+                <div className="flex justify-around ml-5 gap-2">
+                  {Object.keys(charLocations).map((charIndex) => (
+                    <div key={charLocations[charIndex]}>
+                      <img className="w-[40px] h-[40px] md:w-[50px] md:h-[50px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

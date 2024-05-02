@@ -37,7 +37,7 @@ const Timer = ({ startTime }) => {
     };
 
     return (
-        <div>
+        <div className="w-[300px]">
             <p>Score: {currentTime}</p>
         </div>
     );

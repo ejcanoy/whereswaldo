@@ -314,7 +314,7 @@ function MapMarkers() {
           <div className="h-[150px] sticky bg-white z-30 top-0">
             <div className="flex justify-center mb-5">
               <Link to="/">
-                <h1 className="text-4xl">Wheres Waldo?</h1>
+                <h1 className="text-4xl">Where&apos;s Waldo?</h1>
               </Link>
             </div>
             <div className="flex justify-between px-1 md:px-5 flex-wrap">

@@ -25,7 +25,7 @@ function Home() {
     return (
         <>
             <div className="flex justify-center mb-5 md:mb-10">
-                <h1 className="text-4xl">Wheres Waldo?</h1>
+                <h1 className="text-4xl">Where&apos;s Waldo?</h1>
             </div>
             <div className="flex flex-auto justify-around">
                 {

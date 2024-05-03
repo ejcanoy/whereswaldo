@@ -121,10 +121,8 @@ function MapMarkers() {
     return `${minutes}:${seconds}:${ms}`;
   };
 
-  async function handleSubmit(e) {
-    console.log("Clicked");
-    e.preventDefault();
-    const characterName = e.target.querySelector('button[type="submit"]:focus').value;
+  async function handleSubmit(value) {
+    const characterName = value;
 
     try {
       const gameId = localStorage.getItem("gameId");
@@ -159,36 +157,31 @@ function MapMarkers() {
   }
 
   async function handleContinue(value) {
-    console.log("Clicked");
-    console.log(value);
-    // const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
-    // const updateBody = {};
-    // const curTime = new Date();
-    // updateBody["updatedTime"] = curTime;
-    // if (continueOrRestart === "restart") {
-    //   updateBody["startTime"] = curTime;
-    //   updateBody["moves"] = {};
-    // }
-    // try {
-    //   const gameId = localStorage.getItem("gameId");
-    //   const response = await fetch(`${apiURL}/game/${gameId}`, {
-    //     mode: "cors",
-    //     method: "PUT",
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify(updateBody)
-    //   });
-    //   const data = await response.json();
-    // } catch (error) {
-    //   console.error("Could not update game", error);
-    // }
-    // setShowContinueModal(false);
+    const updateBody = {};
+    const curTime = new Date();
+    updateBody["updatedTime"] = curTime;
+    if (value === "restart") {
+      updateBody["startTime"] = curTime;
+      updateBody["moves"] = {};
+    }
+    try {
+      const gameId = localStorage.getItem("gameId");
+      const response = await fetch(`${apiURL}/game/${gameId}`, {
+        mode: "cors",
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateBody)
+      });
+      const data = await response.json();
+    } catch (error) {
+      console.error("Could not update game", error);
+    }
+    setShowContinueModal(false);
   }
 
-  async function handleNewGameButton(e) {
-    console.log("clicked");
-    e.preventDefault();
+  async function handleNewGameButton() {
     try {
       const response = await fetch(`${apiURL}/game`, {
         mode: "cors",
@@ -265,9 +258,7 @@ function MapMarkers() {
                       <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
                     </div>
                     <div>
-                      <form onSubmit={handleNewGameButton}>
-                        <button className="border-2 border-black px-2 cursor-pointer" type="submit">New Game</button>
-                      </form>
+                      <button className="border-2 border-black px-2 cursor-pointer" type="submit" onClick={() => handleNewGameButton}>New Game</button>
                     </div>
                   </div>
                   <div>
@@ -288,9 +279,7 @@ function MapMarkers() {
                 <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
               </div>
               <div>
-                <form onSubmit={handleNewGameButton}>
-                  <button className="border-2 border-black px-2  cursor-pointer" type="submit">New Game</button>
-                </form>
+                <button className="border-2 border-black px-2  cursor-pointer" type="submit" onClick={() => handleNewGameButton}>New Game</button>
               </div>
             </div>
             <div>
@@ -368,17 +357,17 @@ function MapMarkers() {
               <div className="absolute flex" style={{ top: `${popupPosition.y}%`, left: `${popupPosition.x}%` }}>
                 <div className="z-10 border-black border-2 w-[25px] h-[25px] md:w-[50px] md:h-[50px] relative -translate-x-1/2 -translate-y-1/2" >
                 </div>
-                <form className="grid justify-around bg-white w-[75px] h-[150px] relative -translate-x-1/4 sm:-translate-x-1/8 -translate-y-1/2" onSubmit={handleSubmit}>
+                <div className="grid justify-around bg-white w-[75px] h-[150px] relative -translate-x-1/4 sm:-translate-x-1/8 -translate-y-1/2">
                   {Object.keys(charLocations).map((charIndex) => (
                     <div key={charLocations[charIndex]}>
 
-                      <button className="grid justify-items-center cursor-pointer" type="submit" value={`${charLocations[charIndex]}`}>
+                      <button className="grid justify-items-center cursor-pointer" type="submit" value={`${charLocations[charIndex]}`} onClick={() => handleNameSubmit(`${charLocations[charIndex]}`)}>
                         <img className="w-[25px] h-[25px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
                         <span>{charLocations[charIndex]}</span>
                       </button>
                     </div>
                   ))}
-                </form>
+                </div>
               </div>
             )}
 

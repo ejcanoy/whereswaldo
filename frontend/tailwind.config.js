@@ -6,7 +6,11 @@ export default {
   ],
 
   theme: {
-    extend: {},
+    extend: {
+      cursor: {
+        pointer: 'pointer',
+      },
+    },
   },
   plugins: [],
 }

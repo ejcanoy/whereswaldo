@@ -246,7 +246,7 @@ function MapMarkers() {
                     <div className="mb-4">
                       <p>Score: {formatTime(new Date(endTime).getTime() - new Date(startTime).getTime())}</p>
                     </div>
-                    <div className="flex justify-center"><button className="border-2 border-black px-2" type="submit">Submit Score</button></div>
+                    <div className="flex justify-center"><button className="border-2 border-black px-2 cursor-pointer" type="submit">Submit Score</button></div>
                   </form>
                 </div>
               </>
@@ -262,7 +262,7 @@ function MapMarkers() {
                     </div>
                     <div>
                       <form onSubmit={handleNewGameButton}>
-                        <button className="border-2 border-black px-2" type="submit">New Game</button>
+                        <button className="border-2 border-black px-2 cursor-pointer" type="submit">New Game</button>
                       </form>
                     </div>
                   </div>
@@ -285,7 +285,7 @@ function MapMarkers() {
                     </div>
                     <div>
                       <form onSubmit={handleNewGameButton}>
-                        <button className="border-2 border-black px-2" type="submit">New Game</button>
+                        <button className="border-2 border-black px-2  cursor-pointer" type="submit">New Game</button>
                       </form>
                     </div>
                   </div>
@@ -314,8 +314,8 @@ function MapMarkers() {
               </div>
             </div>
             <form onSubmit={handleContinue} className="flex justify-center flex-col items-center gap-5 border-2 border-black p-5 mt-5">
-              <div><button className="border-black border-2 px-2" type="submit" value="continue">continue</button></div>
-              <div><button className="border-black border-2 px-2" type="submit" value="restart">restart</button></div>
+              <div><button className="border-black border-2 px-2  cursor-pointer" type="submit" value="continue">continue</button></div>
+              <div><button className="border-black border-2 px-2 cursor-pointer" type="submit" value="restart">restart</button></div>
             </form>
           </div>
         </>
@@ -367,7 +367,7 @@ function MapMarkers() {
                   {Object.keys(charLocations).map((charIndex) => (
                     <div key={charLocations[charIndex]}>
 
-                      <button className="grid justify-items-center" type="submit" value={`${charLocations[charIndex]}`}>
+                      <button className="grid justify-items-center cursor-pointer" type="submit" value={`${charLocations[charIndex]}`}>
                         <img className="w-[25px] h-[25px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
                         <span>{charLocations[charIndex]}</span>
                       </button>

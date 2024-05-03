@@ -158,32 +158,32 @@ function MapMarkers() {
     setPopupPostion(null);
   }
 
-  async function handleContinue(e) {
+  async function handleContinue(value) {
     console.log("Clicked");
-    e.preventDefault();
-    const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
-    const updateBody = {};
-    const curTime = new Date();
-    updateBody["updatedTime"] = curTime;
-    if (continueOrRestart === "restart") {
-      updateBody["startTime"] = curTime;
-      updateBody["moves"] = {};
-    }
-    try {
-      const gameId = localStorage.getItem("gameId");
-      const response = await fetch(`${apiURL}/game/${gameId}`, {
-        mode: "cors",
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updateBody)
-      });
-      const data = await response.json();
-    } catch (error) {
-      console.error("Could not update game", error);
-    }
-    setShowContinueModal(false);
+    console.log(value);
+    // const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
+    // const updateBody = {};
+    // const curTime = new Date();
+    // updateBody["updatedTime"] = curTime;
+    // if (continueOrRestart === "restart") {
+    //   updateBody["startTime"] = curTime;
+    //   updateBody["moves"] = {};
+    // }
+    // try {
+    //   const gameId = localStorage.getItem("gameId");
+    //   const response = await fetch(`${apiURL}/game/${gameId}`, {
+    //     mode: "cors",
+    //     method: "PUT",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify(updateBody)
+    //   });
+    //   const data = await response.json();
+    // } catch (error) {
+    //   console.error("Could not update game", error);
+    // }
+    // setShowContinueModal(false);
   }
 
   async function handleNewGameButton(e) {
@@ -282,21 +282,21 @@ function MapMarkers() {
       {
         showNewGame &&
         <>
-                <div className="flex flex-col items-center justify-center">
-                  <div className="border-2 border-black flex flex-col items-center w-56 gap-4 my-4 py-4">
-                    <div>
-                      <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
-                    </div>
-                    <div>
-                      <form onSubmit={handleNewGameButton}>
-                        <button className="border-2 border-black px-2  cursor-pointer" type="submit">New Game</button>
-                      </form>
-                    </div>
-                  </div>
-                  <div>
-                    <Scoreboard />
-                  </div>
-                </div>
+          <div className="flex flex-col items-center justify-center">
+            <div className="border-2 border-black flex flex-col items-center w-56 gap-4 my-4 py-4">
+              <div>
+                <Link className="border-2 border-black px-2" to={"/"}>Home</Link>
+              </div>
+              <div>
+                <form onSubmit={handleNewGameButton}>
+                  <button className="border-2 border-black px-2  cursor-pointer" type="submit">New Game</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <Scoreboard />
+            </div>
+          </div>
         </>
       }
       {
@@ -317,10 +317,11 @@ function MapMarkers() {
                 </div>
               </div>
             </div>
-            <form onSubmit={handleContinue} className="flex justify-center flex-col items-center gap-5 border-2 border-black p-5 mt-5">
-              <div><button className="border-black border-2 px-2  cursor-pointer" type="submit" value="continue">continue</button></div>
-              <div><button className="border-black border-2 px-2 cursor-pointer" type="submit" value="restart">restart</button></div>
-            </form>
+            <div className="flex justify-center flex-col items-center gap-5 border-2 border-black p-5 mt-5">
+              <div><button className="border-black border-2 px-2  cursor-pointer" onClick={() => handleContinue("continue")} type="submit" value="continue">continue</button></div>
+              <div><button className="border-black border-2 px-2 cursor-pointer" type="submit" value="restart" onClick={() => handleContinue("restart")}>restart</button></div>
+            </div>
+
           </div>
         </>
       }

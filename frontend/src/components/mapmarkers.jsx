@@ -182,6 +182,7 @@ function MapMarkers() {
   }
 
   async function handleNewGameButton() {
+    console.log("Clicked new game");
     try {
       const response = await fetch(`${apiURL}/game`, {
         mode: "cors",

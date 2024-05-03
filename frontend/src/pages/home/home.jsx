@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
     const [maps, setMaps] = useState([]);
+    const [loading, setLoading] = useState(true);
     const apiURL = import.meta.env.VITE_URL;
 
     useEffect(() => {
@@ -14,6 +15,7 @@ function Home() {
                 });
                 const data = await response.json();
                 setMaps(data);
+                setLoading(false);
 
             } catch (err) {
                 console.log(err);
@@ -21,31 +23,37 @@ function Home() {
         }
 
         getMaps();
-    }, [])
+    }, []);
+
     return (
         <>
-            <div className="flex justify-center mb-5 md:mb-10">
-                <h1 className="text-4xl">Where&apos;s Waldo?</h1>
-            </div>
-            <div className="flex flex-auto justify-around">
-                {
-                    maps.map((map) => (
-                        <Link
-                            key={map._id}
-                            to={{ pathname: `/map/${map._id}`, state: map }}
-                            className="border border-black w-[250px]"
-                        >
-                            <div className="w-full">
-                                <img className="object-contain w-full h-full" src="/whereswaldoimage1.webp" alt="" />
-                            </div>                            
-                            <h1 className="text-center">{map.name}</h1>
-                        </Link>
-                    ))
-
-                }
-            </div>
+            {loading ? (
+                <div className="flex justify-center items-center h-screen">
+                    <h1 className="text-4xl">Loading...</h1>
+                </div>
+            ) : (
+                <>
+                    <div className="flex justify-center mb-5 md:mb-10">
+                        <h1 className="text-4xl">Where&apos;s Waldo?</h1>
+                    </div>
+                    <div className="flex flex-auto justify-around">
+                        {maps.map((map) => (
+                            <Link
+                                key={map._id}
+                                to={{ pathname: `/map/${map._id}`, state: map }}
+                                className="border border-black w-[250px]"
+                            >
+                                <div className="w-full">
+                                    <img className="object-contain w-full h-full" src="/whereswaldoimage1.webp" alt="" />
+                                </div>                            
+                                <h1 className="text-center">{map.name}</h1>
+                            </Link>
+                        ))}
+                    </div>
+                </>
+            )}
         </>
-    )
+    );
 }
 
-export default Home
+export default Home;

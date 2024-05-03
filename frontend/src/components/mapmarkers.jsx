@@ -92,6 +92,7 @@ function MapMarkers() {
   }, [showNotification, mapid, showContinueModal, gameOver, showNewGame, showEndGameForm, name]);
 
   function handleImageClick(e) {
+    console.log("Clicked");
     const image = e.currentTarget;
 
     const width = image.width;
@@ -121,6 +122,7 @@ function MapMarkers() {
   };
 
   async function handleSubmit(e) {
+    console.log("Clicked");
     e.preventDefault();
     const characterName = e.target.querySelector('button[type="submit"]:focus').value;
 
@@ -157,6 +159,7 @@ function MapMarkers() {
   }
 
   async function handleContinue(e) {
+    console.log("Clicked");
     e.preventDefault();
     const continueOrRestart = e.target.querySelector('button[type="submit"]:focus').value;
     const updateBody = {};
@@ -206,6 +209,7 @@ function MapMarkers() {
   }
 
   async function handleNameSubmit(e) {
+    console.log("Clicked");
     e.preventDefault();
     const gameId = localStorage.getItem("gameId");
     const name = e.target.elements.name.value;

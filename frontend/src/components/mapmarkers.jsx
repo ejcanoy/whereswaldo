@@ -182,23 +182,22 @@ function MapMarkers() {
   }
 
   async function handleNewGameButton() {
-    console.log("Clicked new game");
-    // try {
-    //   const response = await fetch(`${apiURL}/game`, {
-    //     mode: "cors",
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify({ "mapid": mapid })
-    //   });
-    //   const data = await response.json();
-    //   localStorage.setItem("gameId", data._id);;
-    //   setGameOver(false);
-    //   setShowNewGame(false);
-    // } catch (error) {
-    //   console.error("Could not start new game", error);
-    // }
+    try {
+      const response = await fetch(`${apiURL}/game`, {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ "mapid": mapid })
+      });
+      const data = await response.json();
+      localStorage.setItem("gameId", data._id);;
+      setGameOver(false);
+      setShowNewGame(false);
+    } catch (error) {
+      console.error("Could not start new game", error);
+    }
 
   }
 

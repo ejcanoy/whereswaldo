@@ -19,6 +19,7 @@ function MapMarkers() {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [name, setName] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showEndGameForm, setShowEndGameForm] = useState(false);
   const apiURL = import.meta.env.VITE_URL;
 
@@ -72,6 +73,7 @@ function MapMarkers() {
       } else {
         setShowNewGame(true);
       }
+      setLoading(false);
     }
     getGameDetails();
 
@@ -314,7 +316,7 @@ function MapMarkers() {
           </div>
         </>
       }
-      {(!gameOver && !showNewGame && !showContinueModal) &&
+      {(!gameOver && !showNewGame && !showContinueModal && !loading) &&
         <>
           <div className="h-[150px] sticky bg-white z-30 top-0">
             <div className="flex justify-center mb-5">

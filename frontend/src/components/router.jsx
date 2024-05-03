@@ -1,23 +1,26 @@
 
 
 
-import { RouterProvider, createBrowserRouter, Redirect } from "react-router-dom";
+import { RouterProvider, createBrowserRouter} from "react-router-dom";
 import MapMarkers from "./mapmarkers";
 import Home from "../pages/home/home";
+import Redirect from "./redirect";
 
 function Router() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <Home />
+            element: <Home />,
+            errorElement: <Redirect />
         },
         {
             path: "/map/:mapid",
-            element: <MapMarkers />
+            element: <MapMarkers />,
+            errorElement: <Redirect />
         },
         {
             path: "*",
-            element: <Redirect to="/" />
+            element: <Redirect />
         }
     ])
 

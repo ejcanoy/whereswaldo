@@ -361,7 +361,7 @@ function MapMarkers() {
                   {Object.keys(charLocations).map((charIndex) => (
                     <div key={charLocations[charIndex]}>
 
-                      <button className="grid justify-items-center cursor-pointer" type="submit" value={`${charLocations[charIndex]}`} onClick={() => handleNameSubmit(`${charLocations[charIndex]}`)}>
+                      <button className="grid justify-items-center cursor-pointer" type="submit" value={`${charLocations[charIndex]}`} onClick={() => handleSubmit(`${charLocations[charIndex]}`)}>
                         <img className="w-[25px] h-[25px]" src={`/${charLocations[charIndex]}.png`} alt={`${charLocations[charIndex]}`} />
                         <span>{charLocations[charIndex]}</span>
                       </button>
